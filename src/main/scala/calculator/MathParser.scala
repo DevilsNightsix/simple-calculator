@@ -24,10 +24,10 @@ object MathParser extends JavaTokenParsers {
       factor
 
   def factor: Parser[Expr] =
-      ("-(" ~> expr <~ ")") ^^ { case x => UnaryOp("-", x) } |
+    ("-(" ~> expr <~ ")") ^^ { case x => UnaryOp("-", x) } |
       "(" ~> expr <~ ")" |
       "-" ~> expr |
-      floatingPointNumber ^^ { x => Number(x.toFloat) }
+      "(\\s*\\d+[,|.]\\d\\s*)|(\\s*\\d+\\s*)".r ^^ { x => Number(BigDecimal(x.replaceAll("""(?m)\s+$""","")))}
 
   def parse(text: String) = {
     parseAll(expr, text) match {

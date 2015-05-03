@@ -12,16 +12,16 @@ class SimpleCalculatorSpec extends UnitSpec {
   }
 
   "A Simple calculator" should "evaluate expression in parenthesis" in {
-    assert(simpleCalculator.compute("2 + (3 - 1)") == 4.0)
-    assert(simpleCalculator.compute("2 + (3 * 2 - 5)") == 3.0)
+    assert(simpleCalculator.compute("2 + (3 - 1)") == BigDecimal(4.0))
+    assert(simpleCalculator.compute("2 + (3 * 2 - 5)") == BigDecimal(3.0))
   }
 
   "A Simple calculator" should "evaluate factorial of a number" in {
-    assert(simpleCalculator.compute("5!") == 120.0)
+    assert(simpleCalculator.compute("5!") == BigDecimal(120.0))
   }
 
   "A simple calculator" should "evaluate involution of number" in {
-    assert(simpleCalculator.compute("2^10") == 1024.0)
+    assert(simpleCalculator.compute("2^10") == BigDecimal(1024.0))
   }
 
   "A simple calculator" should "evaluate sin and cos" in {
@@ -30,7 +30,13 @@ class SimpleCalculatorSpec extends UnitSpec {
   }
 
   "A simple calculator" should "evaluate complex expressions" in {
-    val res = -(23 + 1.0/4.0) * 2 + math.sin(math.cos(1 + math.pow(2, 4)))
-    assert(simpleCalculator.compute("-(23 + 1 / 4) * 2! + sin(cos(1 + 2 ^ 4))") == BigDecimal(res))
+    simpleCalculator.compute("-(23 + 1 / 4) * 2! + sin(cos(1 + 2 ^ 4))").toDouble shouldEqual  BigDecimal(-46.77170413398965854).toDouble
+  }
+
+  "A Simple calculator" should "evaluate big numbers" in {
+    assert(
+    simpleCalculator.compute("10000000000000000000000000000000000000000000000000 - 1") ==
+    BigDecimal("10000000000000000000000000000000000000000000000000") - BigDecimal(1)
+    )
   }
 }
