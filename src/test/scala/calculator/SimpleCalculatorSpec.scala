@@ -39,4 +39,8 @@ class SimpleCalculatorSpec extends UnitSpec {
     BigDecimal("10000000000000000000000000000000000000000000000000") - BigDecimal(1)
     )
   }
+
+  "A simple calculator" should "evaluate complex exprs" in {
+    assert(simpleCalculator.compute("-(4 + 4) / (9 + - 5/(23 - 22))") == BigDecimal(-2))
+  }
 }
