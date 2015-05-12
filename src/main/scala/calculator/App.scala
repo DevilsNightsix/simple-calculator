@@ -6,7 +6,7 @@ object App {
     println("Welcome to interactive Simple Calculator console (v 0.1)")
     val in: String = ""
     do {
-      val in = readLine(">")
+      val in = readLine("|>")
       println(s.compute(in))
     } while(in != "exit")
   }

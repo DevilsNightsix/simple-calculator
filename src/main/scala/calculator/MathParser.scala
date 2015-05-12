@@ -5,7 +5,9 @@ import  scala.util.parsing.combinator._
 object MathParser extends RegexParsers {
   val number =  "(\\s*\\d+[,|.]\\d\\s*)|(\\s*\\d+\\s*)".r
 
-  val bigDecimalNumber = "(\\s*\\d+[,|.]\\d\\s*)|(\\s*\\d+\\s*)".r ^^ { 
+  val parantheses = "(" ~> exprBegin <~ ")"
+
+  val bigDecimalNumber = number ^^ { 
     x => Number(
       BigDecimal(
         x.replaceAll("""(?m)\s+$""","")
@@ -47,7 +49,7 @@ object MathParser extends RegexParsers {
     }
   } | expr
  
-  def expr: Parser[Expr] = bigDecimalNumber | "(" ~> exprBegin <~ ")"
+  def expr: Parser[Expr] = bigDecimalNumber | parantheses
   
   def parse(text: String) = {
     parseAll(exprBegin, text) match {
