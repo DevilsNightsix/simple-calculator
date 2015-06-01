@@ -4,8 +4,14 @@ import  scala.util.parsing.combinator._
 
 object MathParser extends RegexParsers {
   val number =  "(\\s*\\d+[,|.]\\d\\s*)|(\\s*\\d+\\s*)".r
-
   val parantheses = "(" ~> exprBegin <~ ")"
+  val varReg = "\\s*([aA-zZ])\\w*\\s*".r
+
+  val getVariable = varReg ^^ {
+    x => Variable(
+        x.replaceAll("""(?m)\s+$""","")
+      )
+  }
 
   val bigDecimalNumber = number ^^ { 
     x => Number(
@@ -16,12 +22,15 @@ object MathParser extends RegexParsers {
  }
 
   
-  def exprBegin: Parser[Expr] = multiplicantOp ~ rep("[+|-]".r ~ multiplicantOp) ^^ {
+  def exprBegin: Parser[Expr] = varReg ~ "[=]".r ~ exprBegin ^^ {
+    case lh ~ "=" ~ rh => BinaryOp("=", Variable(lh.replaceAll("""(?m)\s+$""","")), rh)
+  } |
+   multiplicantOp ~ rep("[+|-]".r ~ multiplicantOp) ^^ {
     case l ~ li => li.foldLeft(l) {
       case (lh, "+" ~ rh) => BinaryOp("+", lh, rh)
       case (lh, "-" ~ rh) => BinaryOp("-", lh, rh)
     }
-  }
+  } 
  
   def multiplicantOp: Parser[Expr] = powOp ~ rep("[*|/]".r ~ powOp) ^^ {
     case l ~ li => li.foldLeft(l) {
@@ -49,7 +58,7 @@ object MathParser extends RegexParsers {
     }
   } | expr
  
-  def expr: Parser[Expr] = bigDecimalNumber | parantheses
+  def expr: Parser[Expr] = getVariable | bigDecimalNumber | parantheses
   
   def parse(text: String) = {
     parseAll(exprBegin, text) match {
